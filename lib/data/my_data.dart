@@ -1,4 +1,6 @@
-String API_KEY = "73e682094bdd7133faa1b896158520c4";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+String API_KEY = dotenv.env['WEATHER_API_KEY'] ?? '';
 
 String getGreeting() {
   int hour = DateTime.now().hour;
