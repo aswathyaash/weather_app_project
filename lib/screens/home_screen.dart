@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,25 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return Image.asset('assets/images/clear-sky.png');
     }
+  }
+
+  DateTime _now = DateTime.now();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _now = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -140,10 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Center(
                             child: Text(
-                              DateFormat(
-                                'EEEE dd •',
-                              ).add_jm().format(state.weather.date!),
-                              // 'Monday 11 - 13:13pm',
+                              DateFormat('EEEE dd •').add_jm().format(_now),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,

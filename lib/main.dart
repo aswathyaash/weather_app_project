@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather_app_pro/bloc/weather_bloc_bloc.dart';
 import 'package:weather_app_pro/screens/home_screen.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -18,14 +20,18 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder(
         future: _determinePosition(),
         builder: (context, snap) {
-          if (snap.hasData) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          } else if (snap.hasError) {
+            return Scaffold(body: Center(child: Text("Error: ${snap.error}")));
+          } else if (snap.hasData) {
             return BlocProvider<WeatherBlocBloc>(
               create: (context) =>
                   WeatherBlocBloc()..add(FetchWeather(snap.data as Position)),
               child: HomeScreen(),
             );
           } else {
-            return Scaffold(body: Center(child: CircularProgressIndicator()));
+            return Scaffold(body: Center(child: Text("Unexpected state")));
           }
         },
       ),
